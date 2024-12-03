@@ -10,7 +10,7 @@ fn main() {
     let re = Regex::new(r"mul\((\d+),(\d+)\)|don't\(\)|do\(\)").unwrap();
 
     let mut total = 0;
-    let mut process_multiplication = true; // Flag to control whether to process multiplication
+    let mut process_multiplication = true;
     for cap in re.captures_iter(INPUT) {
         if let Some(mat) = cap.get(0) {
             let part = mat.as_str();
