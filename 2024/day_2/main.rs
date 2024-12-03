@@ -1014,72 +1014,55 @@ fn construct_2d_array() -> Vec<Vec<i32>> {
 }
 // The levels are either all increasing or all decreasing.
 // Any two adjacent levels differ by at least one and at most three.
-fn check_is_safe(array: Vec<i32>) -> bool {
-
+fn check_is_safe(array: &Vec<i32>) -> bool {
     let mut temp_array = array.clone();
-    temp_array.dedup();
-    if array.len().abs_diff(temp_array.len()) > 2 {
-        return false
-    }
-
-    let mut temp2 = array.clone();
-    if temp2.sort() == array
-
-
     let mut previous_value = *temp_array.first().unwrap();
     let mut increasing = true;
     let mut decreasing = true;
-    let mut skip_amount = 0;
-    let mut skip_value = false;
-
 
     for mut i in 1..temp_array.len() {
-        if skip_value {
-            skip_value = false;
-            continue
+        if previous_value == temp_array[i] {
+            return false;
         }
-        if skip_amount > 1 {
-            return false
+        if (previous_value - temp_array[i]).abs() > 3 {
+            return false;
         }
-
         if temp_array[i] > previous_value {
             decreasing = false;
-            skip_amount += 1
         }
         if temp_array[i] < previous_value {
             increasing = false;
-            skip_amount += 1
         }
-        if (previous_value - temp_array[i]).abs() > 3 {
-            skip_amount += 1;
-            skip_value = true
-        }
+
         previous_value = temp_array[i];
-
     }
-    return decreasing || increasing ||  skip_amount <= 1 ;
+    return decreasing || increasing;
 }
 
-fn check_combination_is_safe(value_1: i32, value_2: i32)-> bool{
-    if value_2 == value_1 {
-        return false
+fn check_is_safe_skipped(array: Vec<i32>) -> bool {
+    if (check_is_safe(&array)) {
+        return true;
     }
 
-    if (value_1 - value_2).abs() > 3 {
-        return false
+    for i in 0..array.len() {
+        let mut temp_array = array.clone();
+        temp_array.remove(i);
+        if check_is_safe(&temp_array) {
+            return true;
+        }
     }
-
-    return true
+    return false;
 }
+
 fn main() {
     let array = construct_2d_array();
     let mut safe_count = 0;
     for row in array {
         println!("{:?}", row);
-        if check_is_safe(row) {
+        if check_is_safe_skipped(row) {
             safe_count += 1;
             println!("safe");
-        }else{
+        } else {
             println!("unsafe");
         }
     }
